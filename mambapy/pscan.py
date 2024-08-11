@@ -149,7 +149,7 @@ class PScan(torch.autograd.Function):
             Aa[:, :, :-1, 1].mul_(Aa[:, :, 1:, 0])
 
     @staticmethod
-    def forward(ctx, A_in, X_in):
+    def forward(ctx, A_in, X_in, attention_mask = None):
         """
         Applies the parallel scan operation, as defined above. Returns a new tensor.
         If you can, privilege sequence lengths that are powers of two.
@@ -183,7 +183,10 @@ class PScan(torch.autograd.Function):
         ctx.save_for_backward(A_in, X)
         
         # slice [:, :L] (cut if there was padding)
+        # if attention_mask is None:
         return X.transpose(2, 1)[:, :L]
+        # else:
+        #     return X.transpose(2,1)
     
     @staticmethod
     def backward(ctx, grad_output_in):
